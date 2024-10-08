@@ -12,7 +12,8 @@ import java.util.Map;
     lambdaName = "hello_world",
     roleName = "hello_world-role",
     isPublishVersion = false,
-    logsExpiration= RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
+    logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED,
+    aliasName = "${lambdas_alias_name}"
 )
 public class HelloWorld implements RequestHandler<Object, Map<String, Object>> {
 
