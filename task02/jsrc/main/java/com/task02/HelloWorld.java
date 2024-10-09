@@ -34,7 +34,7 @@ public class HelloWorld implements
     if ("/hello".equals(getPath(event))) {
       resultMap.put("statusCode", 200);
       resultMap.put("message", "Hello from Lambda");
-      return buildResponse(SC_NOT_FOUND, "successful");
+      return buildResponse(SC_OK, resultMap);
 
     } else {
       resultMap.put("statusCode", 400);
@@ -42,7 +42,7 @@ public class HelloWorld implements
           "Bad request syntax or unsupported method. Request path: " + getPath(event)
               + ". HTTP method: " + getMethod(event));
 
-      return buildResponse(SC_OK, "unsuccessful");
+      return buildResponse(SC_NOT_FOUND, resultMap);
     }
   }
 
