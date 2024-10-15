@@ -7,10 +7,6 @@ import com.syndicate.deployment.annotations.events.SnsEventSource;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.model.RetentionSetting;
 
-import com.syndicate.deployment.model.events.SnsTriggerEventSourceItem;
-import java.util.HashMap;
-import java.util.Map;
-
 @LambdaHandler(
     lambdaName = "sns_handler",
     roleName = "sns_handler-role",
@@ -19,9 +15,9 @@ import java.util.Map;
     logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 @SnsEventSource(targetTopic = "lambda_topic")
-public class SnsHandler implements RequestHandler<SnsTriggerEventSourceItem, Void> {
+public class SnsHandler implements RequestHandler<Object, Void> {
 
-  public Void handleRequest(SnsTriggerEventSourceItem event, Context context) {
+  public Void handleRequest(Object event, Context context) {
     LambdaLogger logger = context.getLogger();
     logger.log(event.toString());
     return null;
