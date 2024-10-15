@@ -38,10 +38,10 @@
     "dependencies": [],
     "resources": {
       "/hello": {
-        "enable_cors": false,
+        "enable_cors": true,
         "GET": {
           "authorization_type": "NONE",
-          "integration_type": "mock",
+          "integration_type": "lambda",
           "api_key_required": false,
           "method_request_parameters": {},
           "integration_request_body_template": {},
