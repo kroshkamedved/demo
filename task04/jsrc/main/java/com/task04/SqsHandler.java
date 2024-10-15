@@ -15,10 +15,10 @@ import com.syndicate.deployment.model.events.SqsTriggerEventSourceItem;
     aliasName = "${lambdas_alias_name}",
     logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
-@SqsTriggerEventSource(targetQueue = "async_queue", batchSize = 5)
-public class SqsHandler implements RequestHandler<SqsTriggerEventSourceItem, Void> {
+@SqsTriggerEventSource(targetQueue = "async_queue", batchSize = 3)
+public class SqsHandler implements RequestHandler<Object, Void> {
 
-  public Void handleRequest(SqsTriggerEventSourceItem event, Context context) {
+  public Void handleRequest(Object event, Context context) {
     LambdaLogger logger = context.getLogger();
     logger.log(event.toString());
     return null;

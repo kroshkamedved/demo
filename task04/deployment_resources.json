@@ -14,7 +14,10 @@
             "dynamodb:DeleteItem",
             "ssm:PutParameter",
             "ssm:GetParameter",
-            "kms:Decrypt"
+            "kms:Decrypt",
+            "sqs:GetQueueAttributes",
+            "sqs:GetQueueUrl",
+            "sqs:ReceiveMessage"
           ],
           "Effect": "Allow",
           "Resource": "*"
@@ -43,6 +46,7 @@
   "async_queue": {
     "resource_type": "sqs_queue",
     "fifo_queue": false,
+    "region": "eu-central-1",
     "visibility_timeout": 30,
     "delay_seconds": 0,
     "maximum_message_size": 1024,
