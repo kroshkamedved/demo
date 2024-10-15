@@ -17,7 +17,8 @@
             "kms:Decrypt",
             "sqs:GetQueueAttributes",
             "sqs:GetQueueUrl",
-            "sqs:ReceiveMessage"
+            "sqs:ReceiveMessage",
+            "sqs:DeleteMessage"
           ],
           "Effect": "Allow",
           "Resource": "*"
