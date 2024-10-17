@@ -43,14 +43,15 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
   private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
   public Void handleRequest(DynamodbEvent request, Context context) {
-    String json = gson.toJson(request);
+    System.out.println(request);
     initDynamoDbClient();
     DynamodbStreamRecord dynamodbStreamRecord = request.getRecords().get(0);
     Map<String, AttributeValue> resultMap = new HashMap<>();
     if (dynamodbStreamRecord.getEventName().equals("INSERT")) {
+      context.getLogger().log(gson.toJson(request));
       StreamRecord dynamodb = dynamodbStreamRecord.getDynamodb();
       resultMap.put("id", new AttributeValue(UUID.randomUUID().toString()));
-      resultMap.put("itemKey", new AttributeValue(dynamodb.getKeys().get(0).toString()));
+      resultMap.put("itemKey", new AttributeValue(dynamodb.getKeys().get("key").toString()));
       resultMap.put("modificationTime",
           new AttributeValue(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(
               ZonedDateTime.now())));
