@@ -21,6 +21,7 @@ import com.syndicate.deployment.model.RetentionSetting;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -44,22 +45,37 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 
   public Void handleRequest(DynamodbEvent request, Context context) {
     System.out.println(request);
+    String tableName = System.getenv("TABLE");
     initDynamoDbClient();
     DynamodbStreamRecord dynamodbStreamRecord = request.getRecords().get(0);
+    StreamRecord dynamodb = dynamodbStreamRecord.getDynamodb();
     Map<String, AttributeValue> resultMap = new HashMap<>();
     if (dynamodbStreamRecord.getEventName().equals("INSERT")) {
       context.getLogger().log(gson.toJson(request));
-      StreamRecord dynamodb = dynamodbStreamRecord.getDynamodb();
       resultMap.put("id", new AttributeValue(UUID.randomUUID().toString()));
-      resultMap.put("itemKey", new AttributeValue(dynamodb.getKeys().get("key").toString()));
+      resultMap.put("itemKey", new AttributeValue(dynamodb.getKeys().get("key").getS()));
       resultMap.put("modificationTime",
           new AttributeValue(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(
               ZonedDateTime.now())));
-      resultMap.put("newValue", new AttributeValue(dynamodb.getNewImage().toString()));
+      HashMap<String, AttributeValue> newItem = new LinkedHashMap<>();
+      newItem.put("key", new AttributeValue().withS(dynamodb.getNewImage().get("key").getS()));
+      newItem.put("value", new AttributeValue().withN(dynamodb.getNewImage().get("value").getN()));
+      resultMap.put("newValue", new AttributeValue().withM(newItem));
+
     } else {
-      context.getLogger().log("!!!!!UPDATE!!!!");
+      String key = dynamodb.getKeys().get("key").getS();
+      resultMap.put("id", new AttributeValue(UUID.randomUUID().toString()));
+      resultMap.put("itemKey", new AttributeValue(dynamodb.getKeys().get("key").getS()));
+      resultMap.put("modificationTime",
+          new AttributeValue(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(
+              ZonedDateTime.now())));
+      resultMap.put("updatedAttribute", new AttributeValue("value"));
+      resultMap.put("oldValue",
+          new AttributeValue().withN(dynamodb.getOldImage().get("value").getN()));
+      resultMap.put("newValue",
+          new AttributeValue().withN(dynamodb.getNewImage().get("value").getN()));
+
     }
-    String tableName = System.getenv("TABLE");
     amazonDynamoDB.putItem(tableName, resultMap);
     return null;
   }
