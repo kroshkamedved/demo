@@ -45,6 +45,7 @@ public class ApiHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGate
     try {
       this.initDynamoDbClient();
       context.getLogger().log(request.getBody());
+      context.getLogger().log(gson.toJson(request));
       RequestEntity entity = objectMapper.readValue(request.getBody(), RequestEntity.class);
       Event event = new Event(entity.getPrincipalId(), entity.getContent());
       persistData(event);
