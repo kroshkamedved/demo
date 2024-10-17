@@ -33,7 +33,7 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, APIGatewa
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   private AmazonDynamoDB amazonDynamoDB;
-  private static final int SC_OK = 200;
+  private static final int SC_CREATED = 201;
   private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
   private final Map<String, String> responseHeaders = Map.of("Content-Type", "application/json");
 
@@ -48,7 +48,7 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, APIGatewa
       Event event = new Event(entity.getPrincipalId(), entity.getContent());
       persistData(event);
       context.getLogger().log(event.toString());
-      return buildResponse(SC_OK, event);
+      return buildResponse(SC_CREATED, event);
     } catch (Exception e) {
       context.getLogger().log("EXCEPTION DURING BODY DESERIALIZATION: body:" + request.toString());
       throw new RuntimeException(e);
