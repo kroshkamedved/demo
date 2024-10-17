@@ -7,9 +7,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,7 +27,7 @@ import java.util.Map;
     logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 @EnvironmentVariable(key = "TABLE", value = "${target_table}")
-public class ApiHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
+public class ApiHandler implements RequestHandler<Map<String, Object>, APIGatewayV2HTTPResponse> {
 
   private final Regions region = Regions.EU_CENTRAL_1;
   private final ObjectMapper objectMapper = new ObjectMapper();
@@ -39,20 +37,20 @@ public class ApiHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGate
   private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
   private final Map<String, String> responseHeaders = Map.of("Content-Type", "application/json");
 
-  public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent request, Context context) {
+  public APIGatewayV2HTTPResponse handleRequest(Map<String, Object> request, Context context) {
     String tableName = System.getenv("TABLE");
     context.getLogger().log(tableName);
     try {
       this.initDynamoDbClient();
-      context.getLogger().log(request.getBody());
-      context.getLogger().log(gson.toJson(request));
-      RequestEntity entity = objectMapper.readValue(request.getBody(), RequestEntity.class);
+      context.getLogger().log(request.toString());
+      String jsonString = gson.toJson(request);
+      RequestEntity entity = objectMapper.readValue(jsonString, RequestEntity.class);
       Event event = new Event(entity.getPrincipalId(), entity.getContent());
       persistData(event);
       context.getLogger().log(event.toString());
       return buildResponse(SC_OK, event);
-    } catch (JsonProcessingException e) {
-      context.getLogger().log("EXCEPTION DURING BODY DESERIALIZATION: body:" + request.getBody());
+    } catch (Exception e) {
+      context.getLogger().log("EXCEPTION DURING BODY DESERIALIZATION: body:" + request.toString());
       throw new RuntimeException(e);
     }
   }
