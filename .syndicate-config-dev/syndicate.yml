@@ -1,0 +1,17 @@
+account_id: '196241772369'
+deploy_target_bucket: syndicate-education-platform-custom-sandbox-artifacts-sbox01/11cc74e9/task08
+expiration: 2024-10-25 15:40:44.304385+00:00
+extended_prefix_mode: true
+iam_permissions_boundary: arn:aws:iam::196241772369:policy/eo_role_boundary
+project_path: /Users/kroshkamedved/epam/aws/demo
+region: eu-central-1
+resources_prefix: cmtr-11cc74e9-
+tags:
+  course_id: SEP_JAP_3
+  course_type: stm
+  student_id: 11cc74e9
+  type: student
+temp_aws_access_key_id: ASIAS3MHLZ5IUHTWRNC3
+temp_aws_secret_access_key: uETRsaDHfvn72fsJoZ05XOWQee2iXE/a98N9GTRS
+temp_aws_session_token: IQoJb3JpZ2luX2VjEIf//////////wEaCXVzLWVhc3QtMSJIMEYCIQC/qH9n0nnggwZwoII5/lnOTt+qrMlKh7H39FD7X15M8AIhAM9H9ATWq276WOlgAtlONizyH15nVmrOl7SgDqznm4KSKuwCCPD//////////wEQARoMMTk2MjQxNzcyMzY5IgwylaIw240e0bOuk38qwAIjjy6hnunvA4IVIxjpfkIO59ILvz9mg0ZbylEO74Zs6fz7g6UKr6GXXtLxXVcYHKfr2wOzGTbX7QGIth9uJNccjIGwiZZFpkQFpRTl3TAos5YIMqLHMt56BqKctLxkSm+Ep5DzO0A/77h4SRJkrB3qPdyZj7Tjkn+v9F0AcDh9o3NaXrkFgs/iad/YM9PzjfmzOL+4VCPudDsnW/JZRjfT0bkgcOlxWQU9RX9VmHbtjDonZ/50QHgpS6rImNncDr1Alp7yQ9LUGkSmj4JaIVXUDH7YCiokaZpbNQyPzeNCkIzxcYzQ0lacK4UC82lB5KW/9XVX/XACYsFNOugJtPB1LMP6AbgTAzMEm8LAQ74uQpW1a6EsmKmskcB/nyNQH14tbcJ8zRBofBUEO6KkSfksWc2ma7iwUP1v5y5Hn2VpFzC94O64BjqcARcLLuLh73/cIJbB3wUrIcHzV365pdtlzwsBXM9M3AXjVMxCkoOpZBmm1EtkVjrSCE5W59XmiKmd7BK/qd7HF1XhHCS4qe+o23nWH1juyPVEfmbkP4kkDSbGTG+kXJDNrE2NvGAX6ennwvfcT00DCphmdzguwzHMiSpWXLLTLGPV+0CMBPjaSraIC3XFSRCOY+m0z3HL3PtHQi1cIA==
+use_temp_creds: false
