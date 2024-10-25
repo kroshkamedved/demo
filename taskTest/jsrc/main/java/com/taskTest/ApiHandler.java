@@ -21,6 +21,7 @@ import org.apache.http.util.EntityUtils;
     lambdaName = "api_handler",
     roleName = "api_handler-role",
     isPublishVersion = true,
+    layers = {"sdk-layer"},
     aliasName = "${lambdas_alias_name}",
     logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
@@ -29,8 +30,8 @@ import org.apache.http.util.EntityUtils;
     layerName = "sdk-layer",
     libraries = {"lib/httpclient-4.5.13.jar"},
     runtime = DeploymentRuntime.JAVA11,
-    architectures = {Architecture.ARM64},
-    artifactExtension = ArtifactExtension.ZIP
+    architectures = {Architecture.X86_64},
+    artifactExtension = ArtifactExtension.JAR
 )
 public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 
