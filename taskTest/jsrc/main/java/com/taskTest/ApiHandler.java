@@ -15,6 +15,7 @@ import java.util.Map;
 	aliasName = "${lambdas_alias_name}",
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
+@LambdaUrlConfig(authType = AuthType.NONE)
 public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 
 	public Map<String, Object> handleRequest(Object request, Context context) {
