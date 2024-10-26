@@ -8,6 +8,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariables;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
@@ -41,33 +42,39 @@ public class ApiHandler implements
 
   public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,
       Context context) {
-    Gson gson = new Gson();
+    context.getLogger().log("TEST LOGGING");
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
     String functionName = context.getFunctionName();
     APIGatewayProxyResponseEvent responseEvent = null;
     String path = request.getRequestContext().getPath();
     String httpMethod = request.getHttpMethod();
     var requestParams = request.getPathParameters();
-    if ("/signup".equals(path) && "POST".equals(httpMethod)) {
-      responseEvent = userService.processSignup(request, functionName);
-    } else if ("/signin".equals(path) && "POST".equals(httpMethod)) {
-      responseEvent = userService.processSignin(request, functionName);
-    } else if (path.startsWith("/tables") && !requestParams.isEmpty()
-        && requestParams.get("tableid") != null) {
-      responseEvent = tableService.getTable(request);
-    } else if ("/tables".equals(path) && "GET".equals(httpMethod)) {
-      responseEvent = tableService.getTables(request);
-    } else if ("/tables".equals(path) && "POST".equals(httpMethod)) {
-      responseEvent = tableService.addTable(request);
-    } else if ("/reservations".equals(path) && "GET".equals(httpMethod)) {
-      responseEvent = reservationService.getReservation(request);
-    } else if ("/reservations".equals(path) && "POST".equals(httpMethod)) {
-      responseEvent = reservationService.addReservation(request);
-    } else {
-      HashMap<String, String> hashMap = new HashMap<>();
-      hashMap.put("message", "There was an error in the request.");
-      responseEvent = new APIGatewayProxyResponseEvent()
-          .withStatusCode(400)
-          .withBody(gson.toJson(hashMap));
+    try {
+      context.getLogger().log("request :" + gson.toJson(request));
+      if ("/signup".equals(path) && "POST".equals(httpMethod)) {
+        responseEvent = userService.processSignup(request, functionName);
+      } else if ("/signin".equals(path) && "POST".equals(httpMethod)) {
+        responseEvent = userService.processSignin(request, functionName);
+      } else if (path.startsWith("/tables") && !requestParams.isEmpty()
+          && requestParams.get("tableid") != null) {
+        responseEvent = tableService.getTable(request);
+      } else if ("/tables".equals(path) && "GET".equals(httpMethod)) {
+        responseEvent = tableService.getTables(request);
+      } else if ("/tables".equals(path) && "POST".equals(httpMethod)) {
+        responseEvent = tableService.addTable(request);
+      } else if ("/reservations".equals(path) && "GET".equals(httpMethod)) {
+        responseEvent = reservationService.getReservation(request);
+      } else if ("/reservations".equals(path) && "POST".equals(httpMethod)) {
+        responseEvent = reservationService.addReservation(request);
+      } else {
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("message", "There was an error in the request.");
+        responseEvent = new APIGatewayProxyResponseEvent()
+            .withStatusCode(400)
+            .withBody(gson.toJson(hashMap));
+      }
+    } catch (Exception e) {
+      context.getLogger().log("exception :" + e.getMessage());
     }
     responseEvent.setHeaders(initHeadersForCORS());
     return responseEvent;
