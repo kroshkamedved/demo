@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.annotations.lambda.LambdaUrlConfig;
@@ -45,7 +46,9 @@ public class Processor implements RequestHandler<Object, Void> {
       String url = "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m";
       HttpGet restRequest = new HttpGet(url);
       String jsonResponse = EntityUtils.toString(client.execute(restRequest).getEntity());
-      Data data = objectMapper.readValue(jsonResponse, Data.class);
+      System.out.println(jsonResponse);
+      Gson gson = new Gson();
+      Data data = gson.fromJson(jsonResponse, Data.class);
       System.out.println("Data class :" + data);
       TableItem tableItem = new TableItem();
       tableItem.setData(data);
