@@ -10,6 +10,7 @@ import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.annotations.lambda.LambdaUrlConfig;
 import com.syndicate.deployment.model.RetentionSetting;
+import com.syndicate.deployment.model.TracingMode;
 import com.syndicate.deployment.model.lambda.url.AuthType;
 import java.util.UUID;
 import org.apache.http.client.methods.HttpGet;
@@ -24,6 +25,7 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
     lambdaName = "processor",
     roleName = "processor-role",
     isPublishVersion = true,
+    tracingMode = TracingMode.Active,
     aliasName = "${lambdas_alias_name}",
     logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
@@ -50,7 +52,7 @@ public class Processor implements RequestHandler<Object, Void> {
       tableItem.setId(UUID.randomUUID().toString());
       String tableName = System.getenv("table");
       DynamoDbTable<TableItem> table = dynamoDbClient.table(tableName,
-          TableSchema.fromClass(TableItem.class));
+          TableSchema.fromBean(TableItem.class));
       table.putItem(tableItem);
     } catch (Exception e) {
       System.out.println(e.getMessage());

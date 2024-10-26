@@ -1,58 +1,48 @@
 package com.task09;
 
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 
 @lombok.Data
+@DynamoDbBean
 public class Data {
 
-  private double latitude;
-  private double longitude;
-  private double generationtime_ms;
-  private int utc_offset_seconds;
+  private Double latitude;
+  private Double longitude;
   private String timezone;
   private String timezone_abbreviation;
-  private double elevation;
-  private Units current_units;
-  private Current current;
-  private Units hourly_units;
+  private Double elevation;
+  private Long utc_offset_seconds;
   private Hourly hourly;
+  private Units hourly_units;
+  private Double generationtime_ms;
 
   // Getters and Setters
   // Constructor
 }
 
 @lombok.Data
+@DynamoDbBean
+@NoArgsConstructor
+@AllArgsConstructor
 class Units {
 
   private String time;
-  private String interval;
   private String temperature_2m;
-  private String wind_speed_10m;
-
   // Getters and Setters
   // Constructor
 }
 
 @lombok.Data
-class Current {
-
-  private String time;
-  private int interval;
-  private double temperature_2m;
-  private double wind_speed_10m;
-
-  // Getters and Setters
-  // Constructor
-}
-
-@lombok.Data
+@DynamoDbBean
+@NoArgsConstructor
+@AllArgsConstructor
 class Hourly {
 
   private List<String> time;
   private List<Double> temperature_2m;
-  private List<Integer> relative_humidity_2m;
-  private List<Double> wind_speed_10m;
-
   // Getters and Setters
   // Constructor
 }
