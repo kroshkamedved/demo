@@ -25,9 +25,10 @@ import java.util.Map;
     aliasName = "${lambdas_alias_name}",
     logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
-@EnvironmentVariables(value = {@EnvironmentVariable(key = "tablesTable", value = "tables_table"),
-    @EnvironmentVariable(key = "reservationsTable", value = "reservations_table"),
-    @EnvironmentVariable(key = "bookingUserPool", value = "booking_userpool"),
+@EnvironmentVariables(value = {
+    @EnvironmentVariable(key = "tablesTable", value = "${tables_table}"),
+    @EnvironmentVariable(key = "reservationsTable", value = "${reservations_table}"),
+    @EnvironmentVariable(key = "bookingUserPool", value = "${booking_userpool}"),
     @EnvironmentVariable(key = "COGNITO_ID", value = "${booking_userpool}", valueTransformer = USER_POOL_NAME_TO_USER_POOL_ID),
     @EnvironmentVariable(key = "CLIENT_ID", value = "${booking_userpool}", valueTransformer = USER_POOL_NAME_TO_CLIENT_ID)
 })
