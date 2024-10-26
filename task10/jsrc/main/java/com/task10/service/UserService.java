@@ -13,7 +13,6 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitia
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminSetUserPasswordRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUserPoolClientsRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUserPoolsRequest;
 
 @EnvironmentVariable(key = "bookingUserPool", value = "booking_userpool")
 public class UserService {
@@ -33,11 +32,12 @@ public class UserService {
 
   public APIGatewayProxyResponseEvent handleSignupRequest(
       APIGatewayProxyRequestEvent requestEvent, String functionName) {
+    System.out.println(gson.toJson(requestEvent));
     var request = gson.fromJson(requestEvent.getBody(), MySignUpRequest.class);
     System.out.println("UserSignupRequest = " + request);
 
     var cognitoClient = CognitoIdentityProviderClient.create();
-    var userPoolId = getUserPoolId(cognitoClient, functionName);
+    var userPoolId = System.getenv("COGNITO_ID");
     var clientId = getClientId(cognitoClient, userPoolId);
     try {
       var createUserRequest = AdminCreateUserRequest.builder()
@@ -60,6 +60,7 @@ public class UserService {
       System.out.println("setUserPasswordResponse = " + setUserPasswordResponse);
 
     } catch (Exception e) {
+      System.out.println(e.getMessage());
       throw new RuntimeException(e);
     }
     var apiGatewayResponse = new APIGatewayProxyResponseEvent();
@@ -74,8 +75,8 @@ public class UserService {
     System.out.println("UserSigninRequest = " + request);
 
     var cognitoClient = CognitoIdentityProviderClient.create();
-    var userPoolId = getUserPoolId(cognitoClient, functionName);
-    var clientId = getClientId(cognitoClient, userPoolId);
+    var userPoolId = System.getenv("COGNITO_ID");
+    var clientId = System.getenv("CLIENT_ID");
 
     var authParams = Map.of(
         "USERNAME", request.getEmail(),
@@ -101,33 +102,6 @@ public class UserService {
     apiGatewayResponse.setBody(token);
 
     return apiGatewayResponse;
-  }
-
-  private String getUserPoolId(CognitoIdentityProviderClient cognitoClient, String functionName) {
-    String bookingUserPool = System.getenv("bookingUserPool");
-    var userPoolName = functionName.replace("api_handler", bookingUserPool);
-    String userPoolId = "";
-    try {
-      var request = ListUserPoolsRequest.builder()
-          .maxResults(60)
-          .build();
-
-      var response = cognitoClient.listUserPools(request);
-      response.userPools().forEach(userpool -> {
-        System.out.println("User pool " + userpool.name() + ", User ID " + userpool.id());
-      });
-      userPoolId = response.userPools().stream()
-          .filter(userPool -> userPoolName.equals(userPool.name()))
-          .findFirst()
-          .orElseThrow()
-          .id();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-
-    System.out.println("UserPoolId = " + userPoolId);
-
-    return userPoolId;
   }
 
   private String getClientId(CognitoIdentityProviderClient cognitoClient, String userPoolId) {
