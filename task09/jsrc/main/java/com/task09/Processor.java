@@ -8,7 +8,9 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
+import com.syndicate.deployment.annotations.lambda.LambdaUrlConfig;
 import com.syndicate.deployment.model.RetentionSetting;
+import com.syndicate.deployment.model.lambda.url.AuthType;
 import java.util.UUID;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -25,6 +27,7 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
     aliasName = "${lambdas_alias_name}",
     logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
+@LambdaUrlConfig(authType = AuthType.NONE)
 @EnvironmentVariable(key = "table", value = "${target_table}")
 public class Processor implements RequestHandler<Object, Void> {
 
