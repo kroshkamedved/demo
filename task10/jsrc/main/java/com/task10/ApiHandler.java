@@ -52,9 +52,11 @@ public class ApiHandler implements
     var requestParams = request.getPathParameters();
     try {
       context.getLogger().log("request :" + gson.toJson(request));
-      if ("/signup".equals(path) && "POST".equals(httpMethod)) {
+      if ("/signup".equals(path)) {
+        context.getLogger().log("INSIDE \"/signup\"");
         responseEvent = userService.processSignup(request, functionName, context);
-      } else if ("/signin".equals(path) && "POST".equals(httpMethod)) {
+      } else if ("/signin".equals(path)) {
+        context.getLogger().log("INSIDE \"/signin\"");
         responseEvent = userService.processSignin(request, functionName);
       } else if (path.startsWith("/tables") && !requestParams.isEmpty()
           && requestParams.get("tableid") != null) {

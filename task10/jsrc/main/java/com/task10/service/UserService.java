@@ -11,9 +11,11 @@ import java.util.Map;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminSetUserPasswordRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminRespondToAuthChallengeRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ChallengeNameType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.DeliveryMediumType;
 
 @EnvironmentVariable(key = "bookingUserPool", value = "booking_userpool")
@@ -66,19 +68,42 @@ public class UserService {
           .messageAction("SUPPRESS")
           .build();
 
-      var setUserPasswordRequest = AdminSetUserPasswordRequest.builder()
-          .userPoolId(userPoolId)
-          .username(request.getEmail())
-          .password(request.getPassword())
-          .permanent(true)
-          .build();
-
       var createUserResponse = cognitoClient.adminCreateUser(createUserRequest);
-      var setUserPasswordResponse = cognitoClient.adminSetUserPassword(setUserPasswordRequest);
       System.out.println("createUserResponse = " + createUserResponse);
       context.getLogger().log("createUserResponse = " + createUserResponse);
-      context.getLogger().log("setUserPasswordResponse = " + setUserPasswordResponse);
-      System.out.println("setUserPasswordResponse = " + setUserPasswordResponse);
+
+      Map<String, String> authParams = Map.of(
+          "USERNAME", request.getEmail(),
+          "PASSWORD", request.getPassword()
+      );
+
+      AdminInitiateAuthResponse adminInitiateAuthResponse = cognitoClient.adminInitiateAuth(
+          AdminInitiateAuthRequest.builder()
+              .authFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)
+              .authParameters(authParams)
+              .userPoolId(userPoolId)
+              .clientId(clientId)
+              .build());
+
+      if (!ChallengeNameType.NEW_PASSWORD_REQUIRED.name()
+          .equals(adminInitiateAuthResponse.challengeNameAsString())) {
+        throw new RuntimeException(
+            "unexpected challenge: " + adminInitiateAuthResponse.challengeNameAsString());
+      }
+
+      Map<String, String> challengeResponses = Map.of(
+          "USERNAME", request.getEmail(),
+          "PASSWORD", request.getPassword(),
+          "NEW_PASSWORD", request.getPassword()
+      );
+
+      cognitoClient.adminRespondToAuthChallenge(AdminRespondToAuthChallengeRequest.builder()
+          .challengeName(ChallengeNameType.NEW_PASSWORD_REQUIRED)
+          .challengeResponses(challengeResponses)
+          .userPoolId(userPoolId)
+          .clientId(clientId)
+          .session(adminInitiateAuthResponse.session())
+          .build());
 
     } catch (Exception e) {
       context.getLogger().log("exception = " + e.getMessage());
