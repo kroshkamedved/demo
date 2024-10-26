@@ -1,5 +1,6 @@
 package com.task10.service;
 
+import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
@@ -11,8 +12,9 @@ import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityPr
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminSetUserPasswordRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUserPoolClientsRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.DeliveryMediumType;
 
 @EnvironmentVariable(key = "bookingUserPool", value = "booking_userpool")
 public class UserService {
@@ -21,8 +23,8 @@ public class UserService {
 
 
   public APIGatewayProxyResponseEvent processSignup(APIGatewayProxyRequestEvent request,
-      String functionName) {
-    return handleSignupRequest(request, functionName);
+      String functionName, Context context) {
+    return handleSignupRequest(request, functionName, context);
   }
 
   public APIGatewayProxyResponseEvent processSignin(APIGatewayProxyRequestEvent request,
@@ -31,18 +33,35 @@ public class UserService {
   }
 
   public APIGatewayProxyResponseEvent handleSignupRequest(
-      APIGatewayProxyRequestEvent requestEvent, String functionName) {
-    System.out.println(gson.toJson(requestEvent));
+      APIGatewayProxyRequestEvent requestEvent, String functionName, Context context) {
     var request = gson.fromJson(requestEvent.getBody(), MySignUpRequest.class);
     System.out.println("UserSignupRequest = " + request);
 
     var cognitoClient = CognitoIdentityProviderClient.create();
     var userPoolId = System.getenv("COGNITO_ID");
-    var clientId = getClientId(cognitoClient, userPoolId);
+    var clientId = System.getenv("CLIENT_ID");
     try {
       var createUserRequest = AdminCreateUserRequest.builder()
           .userPoolId(userPoolId)
           .temporaryPassword(request.getPassword())
+          .userAttributes(
+              AttributeType.builder()
+                  .name("given_name")
+                  .value(request.getFirstName())
+                  .build(),
+              AttributeType.builder()
+                  .name("family_name")
+                  .value(request.getLastName())
+                  .build(),
+              AttributeType.builder()
+                  .name("email")
+                  .value(request.getEmail())
+                  .build(),
+              AttributeType.builder()
+                  .name("email_verified")
+                  .value("true")
+                  .build())
+          .desiredDeliveryMediums(DeliveryMediumType.EMAIL)
           .username(request.getEmail())
           .messageAction("SUPPRESS")
           .build();
@@ -57,12 +76,15 @@ public class UserService {
       var createUserResponse = cognitoClient.adminCreateUser(createUserRequest);
       var setUserPasswordResponse = cognitoClient.adminSetUserPassword(setUserPasswordRequest);
       System.out.println("createUserResponse = " + createUserResponse);
+      context.getLogger().log("createUserResponse = " + createUserResponse);
+      context.getLogger().log("setUserPasswordResponse = " + setUserPasswordResponse);
       System.out.println("setUserPasswordResponse = " + setUserPasswordResponse);
 
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      context.getLogger().log("exception = " + e.getMessage());
       throw new RuntimeException(e);
     }
+
     var apiGatewayResponse = new APIGatewayProxyResponseEvent();
     apiGatewayResponse.setStatusCode(200);
     apiGatewayResponse.setHeaders(Map.of("Content-Type", "application/json"));
@@ -104,25 +126,5 @@ public class UserService {
     return apiGatewayResponse;
   }
 
-  private String getClientId(CognitoIdentityProviderClient cognitoClient, String userPoolId) {
-    String clientId = "";
-    try {
-      var request = ListUserPoolClientsRequest.builder()
-          .userPoolId(userPoolId)
-          .build();
 
-      var response = cognitoClient.listUserPoolClients(request);
-      response.userPoolClients().forEach(userPoolClient -> {
-        System.out.println("User pool client " + userPoolClient.clientName() + ", Pool ID "
-            + userPoolClient.userPoolId() + ", Client ID " + userPoolClient.clientId());
-      });
-
-      clientId = response.userPoolClients().get(0).clientId();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    System.out.println("Client ID = " + clientId);
-
-    return clientId;
-  }
 }

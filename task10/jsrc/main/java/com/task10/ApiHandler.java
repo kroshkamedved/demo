@@ -43,6 +43,7 @@ public class ApiHandler implements
   public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,
       Context context) {
     context.getLogger().log("TEST LOGGING");
+    System.out.println("System Out logging test");
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     String functionName = context.getFunctionName();
     APIGatewayProxyResponseEvent responseEvent = null;
@@ -52,7 +53,7 @@ public class ApiHandler implements
     try {
       context.getLogger().log("request :" + gson.toJson(request));
       if ("/signup".equals(path) && "POST".equals(httpMethod)) {
-        responseEvent = userService.processSignup(request, functionName);
+        responseEvent = userService.processSignup(request, functionName, context);
       } else if ("/signin".equals(path) && "POST".equals(httpMethod)) {
         responseEvent = userService.processSignin(request, functionName);
       } else if (path.startsWith("/tables") && !requestParams.isEmpty()
