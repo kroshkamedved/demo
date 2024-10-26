@@ -47,12 +47,12 @@ public class ApiHandler implements
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     String functionName = context.getFunctionName();
     APIGatewayProxyResponseEvent responseEvent = null;
-    String path = request.getRequestContext().getPath();
+    String path = request.getPath();
     String httpMethod = request.getHttpMethod();
     var requestParams = request.getPathParameters();
     try {
       context.getLogger().log("request :" + gson.toJson(request));
-      if ("/signup".equals(path)) {
+      if (path.equals("/signup")) {
         context.getLogger().log("INSIDE \"/signup\"");
         responseEvent = userService.processSignup(request, functionName, context);
       } else if ("/signin".equals(path)) {
