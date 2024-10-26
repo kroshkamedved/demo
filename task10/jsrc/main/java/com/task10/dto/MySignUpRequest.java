@@ -7,8 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RouteKey {
+public class MySignUpRequest {
 
-  private String method;
-  private String path;
+  private String firstName;
+  private String lastName;
+  private String email;
+  private String password;
 }

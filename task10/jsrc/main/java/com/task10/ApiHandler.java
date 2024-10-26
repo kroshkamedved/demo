@@ -41,14 +41,15 @@ public class ApiHandler implements
   public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,
       Context context) {
     Gson gson = new Gson();
+    String functionName = context.getFunctionName();
     APIGatewayProxyResponseEvent responseEvent = null;
     String path = request.getRequestContext().getPath();
     String httpMethod = request.getHttpMethod();
     var requestParams = request.getPathParameters();
     if ("/signup".equals(path) && "POST".equals(httpMethod)) {
-      responseEvent = userService.processSignup(request);
+      responseEvent = userService.processSignup(request, functionName);
     } else if ("/signin".equals(path) && "POST".equals(httpMethod)) {
-      responseEvent = userService.processSignin(request);
+      responseEvent = userService.processSignin(request, functionName);
     } else if (path.startsWith("/tables") && !requestParams.isEmpty()
         && requestParams.get("tableid") != null) {
       responseEvent = tableService.getTable(request);
