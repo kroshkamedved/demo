@@ -28,8 +28,8 @@ import java.util.Map;
 @EnvironmentVariables(value = {@EnvironmentVariable(key = "tablesTable", value = "tables_table"),
     @EnvironmentVariable(key = "reservationsTable", value = "reservations_table"),
     @EnvironmentVariable(key = "bookingUserPool", value = "booking_userpool"),
-    @EnvironmentVariable(key = "COGNITO_ID", value = "${pool_name}", valueTransformer = USER_POOL_NAME_TO_USER_POOL_ID),
-    @EnvironmentVariable(key = "CLIENT_ID", value = "${pool_name}", valueTransformer = USER_POOL_NAME_TO_CLIENT_ID)
+    @EnvironmentVariable(key = "COGNITO_ID", value = "${booking_userpool}", valueTransformer = USER_POOL_NAME_TO_USER_POOL_ID),
+    @EnvironmentVariable(key = "CLIENT_ID", value = "${booking_userpool}", valueTransformer = USER_POOL_NAME_TO_CLIENT_ID)
 })
 public class ApiHandler implements
     RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
