@@ -39,10 +39,14 @@ public class Processor implements RequestHandler<Object, Void> {
       HttpGet restRequest = new HttpGet(url);
       String jsonResponse = EntityUtils.toString(client.execute(restRequest).getEntity());
       System.out.println(objectMapper.readValue(jsonResponse, Map.class));
-      Map<String, AttributeValue> map = objectMapper.readValue(jsonResponse, Map.class);
+      Map<String, Object> map = objectMapper.readValue(jsonResponse, Map.class);
+      Map<String, AttributeValue> attributeValueMap = new HashMap<>();
+      for (Map.Entry<String, Object> entry : map.entrySet()) {
+        attributeValueMap.put(entry.getKey(), new AttributeValue(entry.getValue().toString()));
+      }
       Map<String, AttributeValue> resultMap = new HashMap<>();
       resultMap.put("id", new AttributeValue(UUID.randomUUID().toString()));
-      resultMap.put("forecast", new AttributeValue().withM(map));
+      resultMap.put("forecast", new AttributeValue().withM(attributeValueMap));
       String tableName = System.getenv("table");
       amazonDynamoDB.putItem(tableName, resultMap);
     } catch (Exception e) {
