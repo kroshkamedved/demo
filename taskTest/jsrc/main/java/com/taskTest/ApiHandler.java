@@ -22,6 +22,8 @@ import org.apache.http.util.EntityUtils;
     roleName = "api_handler-role",
     isPublishVersion = true,
     layers = {"sdk-layer"},
+    runtime = DeploymentRuntime.JAVA11,
+    architecture = Architecture.X86_64,
     aliasName = "${lambdas_alias_name}",
     logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
