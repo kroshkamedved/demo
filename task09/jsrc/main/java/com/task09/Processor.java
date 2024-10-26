@@ -51,7 +51,7 @@ public class Processor implements RequestHandler<Object, Void> {
       Data data = gson.fromJson(jsonResponse, Data.class);
       System.out.println("Data class :" + data);
       TableItem tableItem = new TableItem();
-      tableItem.setData(data);
+      tableItem.setForecast(data);
       tableItem.setId(UUID.randomUUID().toString());
       String tableName = System.getenv("table");
       DynamoDbTable<TableItem> table = dynamoDbClient.table(tableName,

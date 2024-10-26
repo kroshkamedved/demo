@@ -12,7 +12,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 @NoArgsConstructor
 public class TableItem {
 
-  private com.task09.Data data;
+  private com.task09.Data forecast;
   private String id;
 
   @DynamoDbPartitionKey

@@ -13,5 +13,4 @@ public class Hourly {
 
   private List<String> time;
   private List<Double> temperature_2m;
-
 }
