@@ -53,8 +53,8 @@ syndicate generate meta api_gateway_resource --api_name task10_api --path /signu
 syndicate generate meta api_gateway_resource --api_name task10_api --path /signin
 syndicate generate meta api_gateway_resource --api_name task10_api --path /tables
 syndicate generate meta api_gateway_resource --api_name task10_api --path /reservations
-syndicate generate meta api_gateway_resource_method --api_name task10_api --path /signup --method POST --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1 --authorization_type CUSTOM --authorizer_name cognito_authorizer
-syndicate generate meta api_gateway_resource_method --api_name task10_api --path /signin --method POST --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1 --authorization_type CUSTOM --authorizer_name cognito_authorizer
+syndicate generate meta api_gateway_resource_method --api_name task10_api --path /signup --method POST --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1 --authorization_type NONE 
+syndicate generate meta api_gateway_resource_method --api_name task10_api --path /signin --method POST --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1 --authorization_type NONE
 syndicate generate meta api_gateway_resource_method --api_name task10_api --path /tables --method POST --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1 --authorization_type CUSTOM --authorizer_name cognito_authorizer
 syndicate generate meta api_gateway_resource_method --api_name task10_api --path /tables --method GET --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1 --authorization_type CUSTOM --authorizer_name cognito_authorizer
 syndicate generate meta api_gateway_resource_method --api_name task10_api --path /reservations --method POST --integration_type lambda --lambda_name api_handler --lambda_region eu-central-1 --authorization_type CUSTOM --authorizer_name cognito_authorizer
